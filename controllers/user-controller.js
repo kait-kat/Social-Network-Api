@@ -1,8 +1,8 @@
-const { User, thought } = require('../models');
+const { user, thought } = require('../models');
 
 const userController = { 
     getUsers(req, res) {
-        User.find()
+        user.find()
             .select('-__v')
             .then((dbUserData) => {
                 res.json(dbUserData);
@@ -14,13 +14,13 @@ const userController = {
     },
 
     getSingleUser(req, res) {
-        User.findOne({ _id: req.params.userId })
+        user.findOne({ _id: req.params.userId })
             .select('-__v')
             .populate('friends')
             .populate('thoughts')
             .then((dbUserData) => {
             if (!dbUserData) {
-                return res.status(404).json({ message: 'User with this ID does not exist.' });
+                return res.status(404).json({ message: 'User does not exist.' });
             }
             res.json(dbUserData);
             })
@@ -31,7 +31,7 @@ const userController = {
     },
 
     createUser(req, res) {
-        User.create(req.body)
+        user.create(req.body)
           .then((dbUserData) => {
             res.json(dbUserData);
           })
@@ -42,7 +42,7 @@ const userController = {
     },
 
     updateUser(req, res) {
-        User.findOneAndUpdate(
+        user.findOneAndUpdate(
           { _id: req.params.userId },
           {
             $set: req.body,
@@ -54,7 +54,7 @@ const userController = {
         )
           .then((dbUserData) => {
             if (!dbUserData) {
-              return res.status(404).json({ message: 'User with this ID does not exist.' });
+              return res.status(404).json({ message: 'User does not exist.' });
             }
             res.json(dbUserData);
           })
@@ -65,16 +65,16 @@ const userController = {
     },
 
     deleteUser(req, res) {
-        User.findOneAndDelete({ _id: req.params.userId })
+        user.findOneAndDelete({ _id: req.params.userId })
           .then((dbUserData) => {
             if (!dbUserData) {
-              return res.status(404).json({ message: 'No user with this id!' });
+              return res.status(404).json({ message: 'No such user.' });
             }
     
-            return Thought.deleteMany({ _id: { $in: dbUserData.thoughts } });
+            return thought.deleteMany({ _id: { $in: dbUserData.thoughts } });
           })
           .then(() => {
-            res.json({ message: 'User and associated thoughts deleted!' });
+            res.json({ message: 'User and thoughts have been removed.' });
           })
           .catch((err) => {
             console.log(err);
@@ -83,10 +83,10 @@ const userController = {
     },
 
     addFriend(req, res) {
-        User.findOneAndUpdate({ _id: req.params.userId }, { $addToSet: { friends: req.params.friendId } }, { new: true })
+        user.findOneAndUpdate({ _id: req.params.userId }, { $addToSet: { friends: req.params.friendId } }, { new: true })
           .then((dbUserData) => {
             if (!dbUserData) {
-              return res.status(404).json({ message: 'User with this ID does not exist.' });
+              return res.status(404).json({ message: 'No such user.' });
             }
             res.json(dbUserData);
           })
@@ -97,10 +97,10 @@ const userController = {
     },
 
     removeFriend(req, res) {
-        User.findOneAndUpdate({ _id: req.params.userId }, { $pull: { friends: req.params.friendId } }, { new: true })
+        user.findOneAndUpdate({ _id: req.params.userId }, { $pull: { friends: req.params.friendId } }, { new: true })
           .then((dbUserData) => {
             if (!dbUserData) {
-              return res.status(404).json({ message: 'User with this ID does not exist.' });
+              return res.status(404).json({ message: 'No such user.' });
             }
             res.json(dbUserData);
           })

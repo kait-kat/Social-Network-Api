@@ -1,4 +1,4 @@
-const { thought, User } = require('../models');
+const { thought, user } = require('../models');
 
 const thoughtControllers = {
 
@@ -31,7 +31,7 @@ const thoughtControllers = {
     createThought(req, res) {
         thought.create(req.body)
             .then((dbThoughtData) => {
-                return User.findOneAndUpdate(
+                return user.findOneAndUpdate(
                     { _id: req.body.userId },
                     { $push: { thoughts: dbThoughtData._id }},
                     { new: true }
@@ -70,7 +70,7 @@ const thoughtControllers = {
                     return res.status(404).json({ message: 'No such thought.'});
                 }
 
-                return User.findOneAndUpdate(
+                return user.findOneAndUpdate(
                     { thoughts: req.params.thoughtId },
                     { $pull: { thoughts: req.params.thoughtId }},
                     { new: true }
