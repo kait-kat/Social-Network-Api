@@ -15,7 +15,7 @@ const thoughtControllers = {
     },
 
     getSingleThought(req, res) {
-        thought.findOne({ _id: req.params.thoughtId })
+        thought.findOne({ "_id": req.params.thoughtId })
             .then((dbThoughtData) => {
                 if (!dbThoughtData) {
                     return res.status(404).json({ message: 'No such thought.' });
@@ -32,17 +32,17 @@ const thoughtControllers = {
         thought.create(req.body)
             .then((dbThoughtData) => {
                 return user.findOneAndUpdate(
-                    { _id: req.body.userId },
+                    { "_id": req.body.userId },
                     { $push: { thoughts: dbThoughtData._id }},
                     { new: true }
                 );
             })
             .then((dbUserData) => {
                 if (!dbUserData) {
-                    return res.status(404).json({ message: 'Thought posted but no user ID.' });
+                    return res.status(404).json({ message: 'Thought posted but by WHOMSTVE?' });
                 }
 
-                res.json({ message: 'Thought posted!'});
+                res.json({ message: 'Thought thunked'});
             })
             .catch((err) => {
                 console.log(err);
@@ -50,7 +50,7 @@ const thoughtControllers = {
             });
     },
     updateThought(req, res) {
-        thought.findOneAndUpdate({ _id: req.params.thoughtId }, { $set: req.body }, { runValidators: true, new: true })
+        thought.findOneAndUpdate({ "_id": req.params.thoughtId }, { $set: req.body }, { runValidators: true, new: true })
             .then((dbThoughtData) => {
                 if (!dbThoughtData) {
                     return res.status(404).json({ message: 'No such thought.' });
@@ -64,7 +64,7 @@ const thoughtControllers = {
     },
 
     deleteThought(req, res) {
-        thought.findOneAndUpdate({ _id: req.params.thoughtId })
+        thought.findOneAndUpdate({ "_id": req.params.thoughtId })
             .then((dbThoughtData) => {
                 if (!dbThoughtData) {
                     return res.status(404).json({ message: 'No such thought.'});
@@ -78,7 +78,7 @@ const thoughtControllers = {
             })
             .then((dbThoughtData) => {
                 if (!dbUserData) {
-                    return res.status(404).json({ message: 'Thought posted but no user ID.' });
+                    return res.status(404).json({ message: 'Thought thunked but by WHOMSTVE?' });
                 }
                 res.json({ message: 'Begone thought.' });
             })
@@ -90,13 +90,13 @@ const thoughtControllers = {
 
     addReaction(req, res) {
         thought.findOneAndUpdate(
-            { _id: req.params.thoughtId },
+            { "_id": req.params.thoughtId },
             { $addToSet: { reactions: req.body }},
             { runValidators: true, new: true }
         )
         .then((dbThoughtData) => {
             if (!dbThoughtData) {
-                return res.status(404).json({ message: 'No user found.' });
+                return res.status(404).json({ message: 'No such user.' });
             }
             res.json(dbThoughtData);
         })
@@ -108,7 +108,7 @@ const thoughtControllers = {
 
     removeReaction(req, res) {
         thought.findOneAndUpdate(
-            { _id: eq.params.thoughtId },
+            { "_id": eq.params.thoughtId },
             { $pull: { reactions: { reactionId: req.params.reactionId } } },
             { runValidators: true, new: true }
           )
